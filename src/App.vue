@@ -162,14 +162,15 @@ export default {
   width: 100%;
   height: 100%;
   position: absolute;
+
   top: 0;
   left: 0;
 }
 #square {
   width: 100px;
   height: 100px;
-  top: 50%;
-  left: 50%;
+  top: calc(50% - 50px);
+  left: calc(50% - 50px);
   position: absolute;
   background-color: #333;
   // animation
