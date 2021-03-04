@@ -9,7 +9,7 @@
     width="120"
     height="85"
     style="top: 230px; left: 222px;"
-    @mouseover="addWidth"
+    @mouseover="largeTri"
     @mouseleave="drawTri"
     v-on="handlers"></canvas>
     <svg id="svg">
@@ -24,6 +24,7 @@ export default {
   name: 'App',
   data() {
     return {
+      // выбор действия: Мышь или палец
       handlers: {
         mousedown: this.dragMouseDown,
         touchstart: this.dragTouchDown
@@ -53,25 +54,30 @@ export default {
     this.drawTri();
   },
   created() {
+    // при запуске страницы рисуем линию
     setTimeout(() => {
       this.drawLine();
     }, 0);
   },
   methods: {
     drawLine() {
+      // данный метод рисует линию
+
+      // находим координаты блоков
       let square = this.$el.querySelector('#square');
       let triangle = this.$el.querySelector('#c');
 
+      // к объекту привязываем эти коодинаты, потом с объекта ссылаемся на координаты в линии
       this.coor.square.x = square.getBoundingClientRect().left + (square.getBoundingClientRect().width / 2);
       this.coor.square.y = square.getBoundingClientRect().top + (square.getBoundingClientRect().height / 2);
       this.coor.c.x = triangle.getBoundingClientRect().left + (triangle.getBoundingClientRect().width / 2);
       this.coor.c.y = triangle.getBoundingClientRect().top + (triangle.getBoundingClientRect().height / 2);
     },
     drawTri() {
-      // clear canvas
+      // очищаем канвас
       this.vueCanvas.clearRect(0, 0, 400, 200);
 
-      // draw Tri
+      // рисуем треугольник
       this.vueCanvas.fillStyle = '#333';
       this.vueCanvas.beginPath();
       this.vueCanvas.moveTo(60,10);
@@ -79,9 +85,11 @@ export default {
       this.vueCanvas.lineTo(10,75);
       this.vueCanvas.fill();
     },
-    addWidth() {
+    largeTri() {
+      // удаляем старый треугольник
       this.vueCanvas.clearRect(0, 0, 400, 200);
 
+      // рисуем большой
       this.vueCanvas.fillStyle = '#333';
       this.vueCanvas.beginPath();
       this.vueCanvas.moveTo(60,0);
@@ -90,46 +98,50 @@ export default {
       this.vueCanvas.fill();
     },
     dragMouseDown(event) {
+      // при Нажатии маши на блок
       event.preventDefault()
-      // get the mouse cursor position at startup:
+      // определяем местоположение мыши по координатам
       this.positions.clientX = event.clientX
       this.positions.clientY = event.clientY
       document.onmousemove = this.elementDrag
       document.onmouseup = this.closeDragElement
     },
     dragTouchDown(event) {
+      // при нажатии пальцем на экран
       event.preventDefault()
-      // get the mouse cursor position at startup:
+      // определяем местоположение пальца по координатам
       this.positions.clientX = event.touches[0].pageX
       this.positions.clientY = event.touches[0].pageY
       document.ontouchmove = this.elementTouch
       document.ontouchend = this.closeDragElement
     },
     elementDrag(event) {
+      // перемещение при помощи мыши
       event.preventDefault()
       this.positions.movementX = this.positions.clientX - event.clientX
       this.positions.movementY = this.positions.clientY - event.clientY
       this.positions.clientX = event.clientX
       this.positions.clientY = event.clientY
-      // set the element's new position:
       event.target.style.top = (event.target.offsetTop - this.positions.movementY) + 'px'
       event.target.style.left = (event.target.offsetLeft - this.positions.movementX) + 'px'
+      // перерисовываем сразу линию
       this.coor[event.target.id].x = (event.target.offsetLeft - this.positions.movementX) + (event.target.getBoundingClientRect().width / 2) + 'px'
       this.coor[event.target.id].y = (event.target.offsetTop - this.positions.movementY) + (event.target.getBoundingClientRect().height / 2) + 'px'
     },
     elementTouch(event) {
       event.preventDefault()
+      // перемещение при помощи пальца
       this.positions.movementX = this.positions.clientX - event.touches[0].pageX
       this.positions.movementY = this.positions.clientY - event.touches[0].pageY
       this.positions.clientX = event.touches[0].pageX
       this.positions.clientY = event.touches[0].pageY
-      // set the element's new position:
       event.target.style.top = (event.target.offsetTop - this.positions.movementY) + 'px'
       event.target.style.left = (event.target.offsetLeft - this.positions.movementX) + 'px'
       this.coor[event.target.id].x = (event.target.offsetLeft - this.positions.movementX) + (event.target.getBoundingClientRect().width / 2) + 'px'
       this.coor[event.target.id].y = (event.target.offsetTop - this.positions.movementY) + (event.target.getBoundingClientRect().height / 2) + 'px'
     },
     closeDragElement () {
+      // элемент для остановки событий
       document.onmouseup = null
       document.onmousemove = null
       document.ontouchmove = null
